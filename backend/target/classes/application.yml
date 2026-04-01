@@ -1,0 +1,66 @@
+server:
+  port: 8080
+  tomcat:
+    max-http-form-post-size: 6MB
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/plant_disease?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  jackson:
+    time-zone: Asia/Shanghai
+
+app:
+  frontendBaseUrl: ${VITE_BASE_URL:http://localhost:5173}
+  rateLimit:
+    recognizePerMinute: 30
+
+#minio:
+#  endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+#  accessKey: ${MINIO_ACCESS_KEY:minioadmin}
+#  secretKey: ${MINIO_SECRET_KEY:minioadmin}
+#  bucket: ${MINIO_BUCKET:plant-disease}
+#  presignedUrlSeconds: 600
+minio:
+  endpoint: http://localhost:9000
+  accessKey: admin          # 必须和你启动的一致
+  secretKey: password123    # 必须和你启动的一致
+  bucket: plant-disease
+  presignedUrlSeconds: 600
+
+#ai:
+#  vision:
+#    endpoint: ${DOUBAO_VISION_ENDPOINT:https://api.example.com/v1/vision}
+#    apiKey: ${DOUBAO_API_KEY:}
+#    model: ${DOUBAO_VISION_MODEL:doubao-vision-4.0}
+#    timeoutSeconds: 60
+#    retryCount: 2
+# 识图需要多模态 Chat API（消息里含 type=image_url）。DeepSeek 官方 deepseek-chat / deepseek-reasoner 仅文本，不能识图。
+#ai:
+#  vision:
+#    endpoint: ${AI_VISION_ENDPOINT:https://api.openai.com/v1/chat/completions}
+#    apiKey: ${AI_VISION_API_KEY:}
+#    model: ${AI_VISION_MODEL:gpt-4o-mini}
+#    # 为 true 时识图请求内嵌 JPEG base64（data URL），避免 MinIO 仅内网可访问时云端模型拉不到图
+#    imageInlineBase64: ${AI_VISION_IMAGE_INLINE_BASE64:false}
+#    # 若 model 为 deepseek-chat / deepseek-reasoner，会拒绝识图（与 endpoint 域名无关）；代理多模态时可设 skipDeepSeekTextOnlyCheck: true
+ai:
+  vision:
+    endpoint: ${AI_VISION_ENDPOINT:https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions}
+    apiKey: ${AI_VISION_API_KEY:sk-b7eaab86676b481f8778a06c4481e515}
+    model: ${AI_VISION_MODEL:qwen3.5-plus}
+    timeoutSeconds: ${AI_VISION_TIMEOUT_SECONDS:60}
+    retryCount: ${AI_VISION_RETRY_COUNT:2}
+    # 识图已固定内嵌 JPEG base64；恢复「MinIO 预签名 URL 调模型」时可取消 VisionService 内相关注释并启用下行
+    # imageInlineBase64: ${AI_VISION_IMAGE_INLINE_BASE64:false}
+    skipDeepSeekTextOnlyCheck: ${AI_VISION_SKIP_DEEPSEEK_CHECK:false}
+  prompt:
+    file: ${PROMPT_FILE:prompts/doubao/plant_disease_prompt.txt}
+
